@@ -1,0 +1,30 @@
+language: c
+
+compiler:
+  - clang
+
+sudo: false
+
+addons:
+  apt:
+    packages:
+      - asciidoc
+      - xmlto
+
+script:
+  - true
+
+before_deploy:
+  - git clone --depth 1 -b $TRAVIS_TAG http://repo.or.cz/guilt.git
+  - make -C guilt/Documentation DESTDIR=$PWD/dist PREFIX= install
+  - tar -cvzf guilt-manpages-$TRAVIS_TAG.tar.gz -C dist/man man1 man7
+
+deploy:
+  provider: releases
+  api_key:
+    secure: zv2T8XeupD/EGsIoOYiBP3kI2IBUzrELcrdkLXTMJmWoTNbtwEvNo4RTBeRZpK5YZBFiqf/6f4zzVBo8jTH06Mz4rzAXhm4XBpX6m7xfQPzTSEGuaXvieuFgDpQKweMXIokmnUC7qrOVDTxJ/f/tePScutyr86cx2Kz5wtIk7o9ZhI006JEVA+1RK4J465Ui8bkxVuHWgN8A1+kMfdzC0u/4sDzUk9zkMqHL/M+KRUP9FqGRT3nHCY6XlTgj+XvlmzPyrpRJGmqcbDe/PWMqaV47BbcYGD9HY0QWrfqMZQ5A29ssB8ffNchXxCIoLaGXz1dUBmGsNxE36G0CO+uwFaxnuXlSErQ2bD48lztZr88cV5O3IGX2Q52UEodVnxLSSWqaAbMB5mfWhior9iLGyWl2jMGviM8pc1oy0F+OkaiFx9BzVqXtegc5dJAWvXFBFla0ScjTYPNcoWrXHbADjX1QzwlnfRTcFiaFcaeZZawXbe4HOKrGg8x63KcOMBPAYmAgeZ0DBnOY7OarAber69cxvkp3PD6mC8mqKp5TS5Fx5PGwCIzuy7wk2vepPX7BC3PrinxYd3FQrzI6Gu7LVw+/jdewsI74wl0nKTR6Qk/OIOdu1AXFX++Rc0Ic8W2VPc2IpXOiIy8dWAUPXrDTSudIx06r/T3O5ilUBiJhLTs=
+  file: guilt-manpages-$TRAVIS_TAG.tar.gz
+  skip_cleanup: true
+  on:
+    repo: ichizok/guilt-manpages
+    tags: true
